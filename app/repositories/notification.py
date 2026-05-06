@@ -13,7 +13,7 @@ class NotificationRepository(BaseRepository):
         )
         
         self.session.add(notification)
-        self.session.flush()
+        self.flush()
         return notification
     
     def get(self, notification_id: int) -> Notification | None:

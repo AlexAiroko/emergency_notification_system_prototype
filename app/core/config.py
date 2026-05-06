@@ -18,5 +18,20 @@ class Settings(BaseSettings):
             f"{self.DB_HOST}:{self.DB_PORT}/"
             f"{self.DB_NAME}"
         )
+    
+    TEST_DB_HOST: str
+    TEST_DB_PORT: int
+    TEST_DB_USER: str
+    TEST_DB_PASS: str
+    TEST_DB_NAME: str
+
+    @property
+    def TEST_DATABASE_URL(self) -> str:
+        return (
+            f"postgresql+psycopg2://"
+            f"{self.TEST_DB_USER}:{self.TEST_DB_PASS}@"
+            f"{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/"
+            f"{self.TEST_DB_NAME}"
+        )
 
 settings = Settings() # type: ignore

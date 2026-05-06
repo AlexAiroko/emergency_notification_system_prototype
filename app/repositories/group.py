@@ -11,7 +11,7 @@ class GroupRepository(BaseRepository):
     def create(self, name: str) -> Group:
         group = Group(name=name)
         self.session.add(group)
-        self.session.flush()
+        self.flush()
         return group
     
     def get(self, group_id: int) -> Group | None:

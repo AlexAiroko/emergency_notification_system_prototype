@@ -48,7 +48,6 @@ class GroupRepository(BaseRepository):
                 GroupContact.contact_id == contact_id,
             )
         )
-        
         self.session.execute(stmt)
     
     def get_contacts_for_dispatch(self, group_id: int) -> list[Contact]:

@@ -51,4 +51,3 @@ class NotificationRepository(BaseRepository):
     
     def mark_finished(self, notification_id: int) -> None:
         self.update_status(notification_id, NotificationStatus.SUCCESS)
-        

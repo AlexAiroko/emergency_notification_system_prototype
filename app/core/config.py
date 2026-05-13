@@ -33,5 +33,14 @@ class Settings(BaseSettings):
             f"{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/"
             f"{self.TEST_DB_NAME}"
         )
+    
+    SMTP_HOST: str
+    SMTP_PORT: int
+    SMTP_USERNAME: str
+    SMTP_PASSWORD: str
+    SMTP_FROM: str
+    SMTP_USE_TLS: bool
+    
+    TELEGRAM_BOT_TOKEN: str
 
 settings = Settings() # type: ignore

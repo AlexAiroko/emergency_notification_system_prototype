@@ -28,6 +28,15 @@ class DeliveryRepository(BaseRepository):
     def create_bulk(self, deliveries: list[Delivery]) -> None:
         self.session.add_all(deliveries)
     
+    def get(self, delivery_id: int) -> Delivery | None:
+        stmt = (
+            select(Delivery)
+            .where(Delivery.id == delivery_id)
+        )
+        res = self.session.execute(stmt)
+        delivery = res.scalar_one_or_none()
+        return delivery
+    
     def get_by_notification(self, notification_id: int) -> list[Delivery]:
         stmt = (
             select(Delivery)

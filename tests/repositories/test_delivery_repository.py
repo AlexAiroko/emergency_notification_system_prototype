@@ -51,6 +51,32 @@ def test_create_bulk(db_session, notification, contact, contact_method, second_c
     assert len(res) == 2
 
 
+def test_get_delivery(db_session, delivery_factory, notification, contact, contact_method):
+    repo = DeliveryRepository(db_session)
+
+    created = delivery_factory(
+        notification_id=notification.id,
+        contact_id=contact.id,
+        contact_method_id=contact_method.id,
+    )
+
+    found = repo.get(created.id)
+
+    assert found is not None
+    assert found.id == created.id
+    assert found.notification_id == created.notification_id
+    assert found.contact_id == created.contact_id
+    assert found.contact_method_id == created.contact_method_id
+
+
+def test_get_delivery_not_found(db_session):
+    repo = DeliveryRepository(db_session)
+
+    result = repo.get(999999)
+
+    assert result is None
+
+
 @pytest.mark.parametrize("count", [0, 1, 5])
 def test_get_by_notification(db_session, delivery_factory, notification, contact, contact_method, count):
     repo = DeliveryRepository(db_session)

@@ -108,7 +108,6 @@ def test_remove_non_existing_contact_does_not_fail(db_session):
 
     group = repo.create(name="G1")
 
-    # не должно упасть
     repo.remove_contact_from_group(group.id, 999999)
     db_session.commit()
 

@@ -113,8 +113,8 @@ def test_update_status_direct(db_session, notification_template, group):
 def test_update_status_non_existing(db_session):
     repo = NotificationRepository(db_session)
 
+    # Method shouldn't throw an exception
     repo.mark_started(999999)
     db_session.commit()
-
-    # test should not fall
+    
     assert True

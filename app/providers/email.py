@@ -35,8 +35,8 @@ class EmailProvider(BaseProvider):
 
                 smtp.send_message(message)
 
-            # SMTP обычно не возвращает message_id,
-            # поэтому используем заголовок Message-ID.
+            # SMTP usually does not return a message_id, 
+            # so we use the Message-ID header.
             return message["Message-ID"]
 
         except Exception as exc:

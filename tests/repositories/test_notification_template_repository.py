@@ -189,6 +189,7 @@ def test_activation_methods(
 def test_activate_non_existing_template(db_session):
     repo = NotificationTemplateRepository(db_session)
 
+    # Method shouldn't throw an exception
     repo.activate(999999)
     db_session.flush()
 
@@ -198,6 +199,7 @@ def test_activate_non_existing_template(db_session):
 def test_deactivate_non_existing_template(db_session):
     repo = NotificationTemplateRepository(db_session)
 
+    # Method shouldn't throw an exception
     repo.deactivate(999999)
     db_session.flush()
 

@@ -204,7 +204,7 @@ def test_get_with_methods_eager_loaded(db_session):
 
     result = repo.get_with_methods(contact.id)
 
-    # проверка что relation уже загружен
+    # check that the relation is already loaded
     state = inspect(result)
     assert "contact_methods" not in state.unloaded
 

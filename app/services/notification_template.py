@@ -1,16 +1,14 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
+from app.db.uow import UnitOfWork
+from app.exceptions.notification_template import TemplateAlreadyExistsError
 from app.models.notification_template import NotificationTemplate
-from app.repositories.notification_template import NotificationTemplateRepository
 
 
 class NotificationTemplateService:
-    def __init__(self, session: Session) -> None:
-        self.session = session
-        self.template_repo = NotificationTemplateRepository(session)
-
     def create_template(
         self,
+        uow: UnitOfWork,
         body: str,
         name: str,
         subject: str | None = None,
@@ -24,47 +22,53 @@ class NotificationTemplateService:
         """
         self._validate_body(body)
 
-        return self.template_repo.create(
-            body=body,
-            name=name,
-            subject=subject,
-            is_active=is_active,
-        )
+        try:
+            return uow.template_repo.create(
+                body=body,
+                name=name,
+                subject=subject,
+                is_active=is_active,
+            )
+        except IntegrityError as exc:
+            raise TemplateAlreadyExistsError() from exc
 
-    def get_template(self, template_id: int) -> NotificationTemplate | None:
+    def get_template(self, uow: UnitOfWork, template_id: int) -> NotificationTemplate | None:
         """
         Returns a template by ID or None.
         """
-        return self.template_repo.get(template_id)
+        return uow.template_repo.get(template_id)
 
     def get_many_templates(
         self,
-        limit: int = 100,
+        uow: UnitOfWork,
+        limit: int = 20,
         offset: int = 0,
     ) -> list[NotificationTemplate]:
         """
         Returns a list of all templates.
         """
-        return self.template_repo.get_many(
+        return uow.template_repo.get_many(
             limit=limit,
             offset=offset,
         )
 
     def get_active_templates(
         self,
-        limit: int = 100,
+        uow: UnitOfWork,
+        limit: int = 20,
         offset: int = 0,
     ) -> list[NotificationTemplate]:
         """
         Returns only active templates.
         """
-        return self.template_repo.get_active(
+        return uow.template_repo.get_active(
             limit=limit,
             offset=offset,
         )
 
     def update_template(
         self,
+        uow: UnitOfWork,
         template_id: int,
         subject: str | None,
         body: str,
@@ -78,32 +82,33 @@ class NotificationTemplateService:
         self._validate_body(body)
 
         # The repository expects a string, so we replace None with an empty string.
-        self.template_repo.update_content(
+        uow.template_repo.update_content(
             template_id=template_id,
             subject=subject or "",
             body=body,
         )
 
-    def activate_template(self, template_id: int) -> None:
+    def activate_template(self, uow: UnitOfWork, template_id: int) -> None:
         """
         Makes the template active.
         """
-        self.template_repo.activate(template_id)
+        uow.template_repo.activate(template_id)
 
-    def deactivate_template(self, template_id: int) -> None:
+    def deactivate_template(self, uow: UnitOfWork, template_id: int) -> None:
         """
         Makes the template inactive.
         """
-        self.template_repo.deactivate(template_id)
+        uow.template_repo.deactivate(template_id)
 
     def ensure_template_is_active(
         self,
+        uow: UnitOfWork,
         template_id: int,
     ) -> NotificationTemplate:
         """
         Returns the template if it exists and is active.
         """
-        template = self.template_repo.get(template_id)
+        template = uow.template_repo.get(template_id)
 
         if template is None:
             raise ValueError(f"Template {template_id} not found")

@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -8,21 +8,11 @@ from app.services.notification import NotificationService
 @pytest.fixture
 def notification_service():
     """
-    Creates a NotificationService with mocked dependencies.
+    Creates a NotificationService with mocked inner services.
     """
-    with (
-        patch("app.services.notification.NotificationRepository"),
-        patch("app.services.notification.GroupRepository"),
-        patch("app.services.notification.DeliveryRepository"),
-        patch("app.services.notification.DeliveryService"),
-        patch("app.services.notification.NotificationTemplateService"),
-    ):
-        service = NotificationService(session=Mock())
+    service = NotificationService()
 
-        service.notification_repo = Mock()
-        service.group_repo = Mock()
-        service.delivery_repo = Mock()
-        service.delivery_service = Mock()
-        service.template_service = Mock()
+    service.delivery_service = Mock()
+    service.template_service = Mock()
 
-        return service
+    return service

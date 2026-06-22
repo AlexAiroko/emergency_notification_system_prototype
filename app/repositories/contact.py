@@ -24,7 +24,7 @@ class ContactRepository(BaseRepository):
         contact = res.scalar_one_or_none()
         return contact
     
-    def get_many(self, limit: int = 100, offset: int = 0) -> list[Contact]:
+    def get_many(self, limit: int = 20, offset: int = 0) -> list[Contact]:
         stmt = (
             select(Contact)
             .order_by(Contact.id)

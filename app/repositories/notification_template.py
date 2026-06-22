@@ -31,7 +31,7 @@ class NotificationTemplateRepository(BaseRepository):
         template = res.scalar_one_or_none()
         return template
     
-    def get_active(self, limit: int = 100, offset: int = 0) -> list[NotificationTemplate]:
+    def get_active(self, limit: int = 20, offset: int = 0) -> list[NotificationTemplate]:
         stmt = (
             select(NotificationTemplate)
             .where(NotificationTemplate.is_active)
@@ -43,7 +43,7 @@ class NotificationTemplateRepository(BaseRepository):
         templates = list(res.scalars().all())
         return templates
     
-    def get_many(self, limit: int = 100, offset: int = 0) -> list[NotificationTemplate]:
+    def get_many(self, limit: int = 20, offset: int = 0) -> list[NotificationTemplate]:
         stmt = (
             select(NotificationTemplate)
             .order_by(NotificationTemplate.id)

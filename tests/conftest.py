@@ -23,6 +23,9 @@ pytest_plugins = [
     "tests.fixtures.delivery",
     "tests.fixtures.notification_template",
     "tests.fixtures.notification",
+    "tests.fixtures.notification_service",
+    "tests.fixtures.delivery_service",
+    "tests.fixtures.template_service"
 ]
 
 

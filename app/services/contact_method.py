@@ -8,7 +8,7 @@ class ContactMethodService:
         self,
         uow: UnitOfWork,
         contact_id: int,
-        channel,
+        channel: ChannelType,
         address: str,
     ) -> ContactMethod:
         contact = uow.contact_repo.get(contact_id)
@@ -20,6 +20,13 @@ class ContactMethodService:
             channel=channel,
             address=address,
         )
+    
+    def get_method(self, uow: UnitOfWork, contact_id: int, method_id: int):
+        contact = uow.contact_repo.get(contact_id)
+        if not contact:
+            raise ContactNotFoundError(contact_id)
+
+        return uow.contact_method_repo.get(method_id)
 
     def get_methods(self, uow: UnitOfWork, contact_id: int):
         contact = uow.contact_repo.get(contact_id)

@@ -1,4 +1,5 @@
 from app.repositories.contact import ContactRepository
+from app.repositories.contact_method import ContactMethodRepository
 from app.repositories.notification import NotificationRepository
 from app.repositories.delivery import DeliveryRepository
 from app.repositories.group import GroupRepository
@@ -11,4 +12,5 @@ REPOSITORIES = {
     "group_repo": GroupRepository,
     "template_repo": NotificationTemplateRepository,
     "contact_repo": ContactRepository,
+    "contact_method_repo": ContactMethodRepository,
 }

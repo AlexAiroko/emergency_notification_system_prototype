@@ -25,6 +25,7 @@ class NotificationTemplateService:
         Business rules:
         - body must not be empty.
         """
+        
         self._validate_body(body)
 
         try:
@@ -58,6 +59,7 @@ class NotificationTemplateService:
         """
         Returns a list of all templates.
         """
+        
         return uow.template_repo.get_many(
             limit=limit,
             offset=offset,
@@ -72,6 +74,7 @@ class NotificationTemplateService:
         """
         Returns only active templates.
         """
+        
         return uow.template_repo.get_active(
             limit=limit,
             offset=offset,
@@ -90,6 +93,7 @@ class NotificationTemplateService:
         Business rules:
         - body must not be empty.
         """
+        
         self._validate_body(body)
 
         # The repository expects a string, so we replace None with an empty string.
@@ -103,12 +107,14 @@ class NotificationTemplateService:
         """
         Makes the template active.
         """
+        
         uow.template_repo.activate(template_id)
 
     def deactivate_template(self, uow: UnitOfWork, template_id: int) -> None:
         """
         Makes the template inactive.
         """
+        
         uow.template_repo.deactivate(template_id)
 
     def ensure_template_is_active(
@@ -119,6 +125,7 @@ class NotificationTemplateService:
         """
         Returns the template if it exists and is active.
         """
+        
         template = uow.template_repo.get(template_id)
 
         if template is None:
@@ -131,7 +138,8 @@ class NotificationTemplateService:
 
     def _validate_body(self, body: str) -> None:
         """
-        Проверяет, что body содержит непустой текст.
+        Checks that the body is non-empty.
         """
+        
         if not body or not body.strip():
             raise TemplateBodyEmptyError()

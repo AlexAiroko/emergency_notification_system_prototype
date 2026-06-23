@@ -3,7 +3,12 @@ from types import SimpleNamespace
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from app.exceptions.notification_template import TemplateAlreadyExistsError
+from app.exceptions.notification_template import (
+    TemplateAlreadyExistsError,
+    TemplateBodyEmptyError,
+    TemplateInactiveError,
+    TemplateNotFoundError,
+)
 
 
 def test_create_template(template_service, uow):
@@ -12,7 +17,7 @@ def test_create_template(template_service, uow):
     uow.template_repo.create.return_value = template
 
     result = template_service.create_template(
-        uow=uow,
+        uow,
         body="body",
         name="name",
         subject="subject",
@@ -39,11 +44,11 @@ def test_create_template(template_service, uow):
 )
 def test_create_template_empty_body(template_service, uow, body):
     with pytest.raises(
-        ValueError,
+        TemplateBodyEmptyError,
         match="Template body cannot be empty",
     ):
         template_service.create_template(
-            uow=uow,
+            uow,
             body=body,
             name="name",
         )
@@ -53,14 +58,17 @@ def test_create_template_empty_body(template_service, uow, body):
 
 def test_create_template_already_exists(template_service, uow):
     uow.template_repo.create.side_effect = IntegrityError(
-        statement=None,
-        params=None,
+        statement="",
+        params={},
         orig=Exception(),
     )
 
-    with pytest.raises(TemplateAlreadyExistsError):
+    with pytest.raises(
+        TemplateAlreadyExistsError,
+        match="Template already exists",
+    ):
         template_service.create_template(
-            uow=uow,
+            uow,
             body="body",
             name="name",
         )
@@ -70,6 +78,16 @@ def test_get_template(template_service, uow):
     template_service.get_template(uow, 10)
 
     uow.template_repo.get.assert_called_once_with(10)
+
+
+def test_get_template_not_found(template_service, uow):
+    uow.template_repo.get.return_value = None
+
+    with pytest.raises(
+        TemplateNotFoundError,
+        match="Template 10 not found",
+    ):
+        template_service.get_template(uow, 10)
 
 
 def test_get_many_templates(template_service, uow):
@@ -100,7 +118,7 @@ def test_get_active_templates(template_service, uow):
 
 def test_update_template(template_service, uow):
     template_service.update_template(
-        uow=uow,
+        uow,
         template_id=1,
         subject="subj",
         body="body",
@@ -115,7 +133,7 @@ def test_update_template(template_service, uow):
 
 def test_update_template_none_subject(template_service, uow):
     template_service.update_template(
-        uow=uow,
+        uow,
         template_id=1,
         subject=None,
         body="body",
@@ -130,11 +148,11 @@ def test_update_template_none_subject(template_service, uow):
 
 def test_update_template_empty_body(template_service, uow):
     with pytest.raises(
-        ValueError,
+        TemplateBodyEmptyError,
         match="Template body cannot be empty",
     ):
         template_service.update_template(
-            uow=uow,
+            uow,
             template_id=1,
             subject="subj",
             body=" ",
@@ -169,14 +187,12 @@ def test_ensure_template_is_active(template_service, uow):
 
     assert result is template
 
-    uow.template_repo.get.assert_called_once_with(10)
-
 
 def test_ensure_template_not_found(template_service, uow):
     uow.template_repo.get.return_value = None
 
     with pytest.raises(
-        ValueError,
+        TemplateNotFoundError,
         match="Template 10 not found",
     ):
         template_service.ensure_template_is_active(
@@ -191,7 +207,7 @@ def test_ensure_template_inactive(template_service, uow):
     )
 
     with pytest.raises(
-        ValueError,
+        TemplateInactiveError,
         match="Template 10 is inactive",
     ):
         template_service.ensure_template_is_active(

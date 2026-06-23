@@ -1,8 +1,21 @@
 from app.db.repositories_registry import REPOSITORIES
 from app.db.session import session_maker
+from app.repositories.contact import ContactRepository
+from app.repositories.contact_method import ContactMethodRepository
+from app.repositories.delivery import DeliveryRepository
+from app.repositories.group import GroupRepository
+from app.repositories.notification import NotificationRepository
+from app.repositories.notification_template import NotificationTemplateRepository
 
 
 class UnitOfWork:
+    template_repo: NotificationTemplateRepository
+    notification_repo: NotificationRepository
+    delivery_repo: DeliveryRepository
+    group_repo: GroupRepository
+    contact_repo: ContactRepository
+    contact_method_repo: ContactMethodRepository
+    
     def __init__(self):
         self.session = None
 

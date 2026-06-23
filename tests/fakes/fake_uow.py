@@ -7,6 +7,7 @@ class FakeUnitOfWork:
         self.notification_repo = Mock()
         self.delivery_repo = Mock()
         self.group_repo = Mock()
+        self.contact_repo = Mock()
 
         self.commit = Mock()
         self.rollback = Mock()

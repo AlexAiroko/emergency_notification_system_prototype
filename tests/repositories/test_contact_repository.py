@@ -232,3 +232,159 @@ def test_contact_methods_belong_to_contact(db_session):
     result = repo.get_with_methods(contact.id)
 
     assert all(cm.contact_id == contact.id for cm in result.contact_methods)
+
+
+def test_create_inactive_contact(db_session):
+    repo = ContactRepository(db_session)
+
+    contact = repo.create(
+        name="Inactive",
+        is_active=False,
+    )
+
+    assert contact.is_active is False
+
+    db_session.expire_all()
+
+    loaded = repo.get(contact.id)
+
+    assert loaded.is_active is False
+
+
+def test_get_active_contacts(db_session):
+    repo = ContactRepository(db_session)
+
+    repo.create(name="A")
+    repo.create(name="B", is_active=False)
+    repo.create(name="C")
+
+    contacts = repo.get_active()
+
+    assert len(contacts) == 2
+    assert [c.name for c in contacts] == ["A", "C"]
+
+
+def test_get_active_contacts_limit_offset(db_session):
+    repo = ContactRepository(db_session)
+
+    repo.create(name="A")
+    repo.create(name="B", is_active=False)
+    repo.create(name="C")
+    repo.create(name="D")
+
+    contacts = repo.get_active(
+        limit=1,
+        offset=1,
+    )
+
+    assert len(contacts) == 1
+    assert contacts[0].name == "C"
+
+
+def test_get_active_contacts_empty(db_session):
+    repo = ContactRepository(db_session)
+
+    repo.create(name="A", is_active=False)
+    repo.create(name="B", is_active=False)
+
+    contacts = repo.get_active()
+
+    assert contacts == []
+
+
+def test_update_contact(db_session):
+    repo = ContactRepository(db_session)
+
+    contact = repo.create(name="Old")
+
+    repo.update(
+        contact.id,
+        "New",
+    )
+
+    db_session.expire_all()
+
+    updated = repo.get(contact.id)
+
+    assert updated.name == "New"
+
+
+def test_update_not_existing_contact(db_session):
+    repo = ContactRepository(db_session)
+
+    repo.update(
+        999999,
+        "New",
+    )
+
+    assert repo.get(999999) is None
+
+
+def test_activate_contact(db_session):
+    repo = ContactRepository(db_session)
+
+    contact = repo.create(
+        name="User",
+        is_active=False,
+    )
+
+    repo.activate(contact.id)
+
+    db_session.expire_all()
+
+    contact = repo.get(contact.id)
+
+    assert contact.is_active is True
+
+
+def test_deactivate_contact(db_session):
+    repo = ContactRepository(db_session)
+
+    contact = repo.create(name="User")
+
+    repo.deactivate(contact.id)
+
+    db_session.expire_all()
+
+    contact = repo.get(contact.id)
+
+    assert contact.is_active is False
+
+
+def test_activate_then_deactivate_contact(db_session):
+    repo = ContactRepository(db_session)
+
+    contact = repo.create(
+        name="User",
+        is_active=False,
+    )
+
+    repo.activate(contact.id)
+
+    db_session.expire_all()
+
+    assert repo.get(contact.id).is_active is True
+
+    repo.deactivate(contact.id)
+
+    db_session.expire_all()
+
+    assert repo.get(contact.id).is_active is False
+
+
+def test_update_does_not_change_external_id(db_session):
+    repo = ContactRepository(db_session)
+
+    contact = repo.create(
+        name="Old",
+        external_id="ext-123",
+    )
+
+    repo.update(contact.id, "New")
+
+    db_session.expire_all()
+
+    updated = repo.get(contact.id)
+
+    assert updated.name == "New"
+    assert updated.external_id == "ext-123"

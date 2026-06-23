@@ -1,7 +1,12 @@
 from sqlalchemy.exc import IntegrityError
 
 from app.db.uow import UnitOfWork
-from app.exceptions.notification_template import TemplateAlreadyExistsError
+from app.exceptions.notification_template import (
+    TemplateAlreadyExistsError, 
+    TemplateBodyEmptyError, 
+    TemplateInactiveError, 
+    TemplateNotFoundError,
+)
 from app.models.notification_template import NotificationTemplate
 
 
@@ -34,9 +39,15 @@ class NotificationTemplateService:
 
     def get_template(self, uow: UnitOfWork, template_id: int) -> NotificationTemplate | None:
         """
-        Returns a template by ID or None.
+        Returns a template by ID.
         """
-        return uow.template_repo.get(template_id)
+        
+        template = uow.template_repo.get(template_id)
+        
+        if template is None:
+            raise TemplateNotFoundError(template_id)
+        
+        return template
 
     def get_many_templates(
         self,
@@ -111,10 +122,10 @@ class NotificationTemplateService:
         template = uow.template_repo.get(template_id)
 
         if template is None:
-            raise ValueError(f"Template {template_id} not found")
+            raise TemplateNotFoundError(template_id)
 
         if not template.is_active:
-            raise ValueError(f"Template {template_id} is inactive")
+            raise TemplateInactiveError(template_id)
 
         return template
 
@@ -123,4 +134,4 @@ class NotificationTemplateService:
         Проверяет, что body содержит непустой текст.
         """
         if not body or not body.strip():
-            raise ValueError("Template body cannot be empty")
+            raise TemplateBodyEmptyError()

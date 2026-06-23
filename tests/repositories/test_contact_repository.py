@@ -299,7 +299,7 @@ def test_update_contact(db_session):
 
     repo.update(
         contact.id,
-        "New",
+        name="New",
     )
 
     db_session.expire_all()
@@ -314,7 +314,7 @@ def test_update_not_existing_contact(db_session):
 
     repo.update(
         999999,
-        "New",
+        name="New",
     )
 
     assert repo.get(999999) is None
@@ -380,7 +380,7 @@ def test_update_does_not_change_external_id(db_session):
         external_id="ext-123",
     )
 
-    repo.update(contact.id, "New")
+    repo.update(contact.id, name="New")
 
     db_session.expire_all()
 

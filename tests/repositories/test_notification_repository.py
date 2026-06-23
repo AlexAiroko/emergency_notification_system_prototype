@@ -21,7 +21,10 @@ def test_create_notification(db_session, notification_template, group):
 def test_get_notification(db_session, notification_template, group):
     repo = NotificationRepository(db_session)
 
-    created = repo.create(notification_template.id, group.id)
+    created = repo.create(
+        template_id=notification_template.id,
+        group_id=group.id,
+    )
 
     found = repo.get(created.id)
 
@@ -41,7 +44,10 @@ def test_get_notification_not_found(db_session):
 def test_get_with_relations(db_session, notification_template, group):
     repo = NotificationRepository(db_session)
 
-    notification = repo.create(notification_template.id, group.id)
+    notification = repo.create(
+        template_id=notification_template.id,
+        group_id=group.id,
+    )
 
     result = repo.get_with_relations(notification.id)
 
@@ -63,7 +69,10 @@ def test_get_with_relations_not_found(db_session):
 def test_mark_started(db_session, notification_template, group):
     repo = NotificationRepository(db_session)
 
-    notification = repo.create(notification_template.id, group.id)
+    notification = repo.create(
+        template_id=notification_template.id,
+        group_id=group.id,
+    )
 
     repo.mark_started(notification.id)
     db_session.commit()
@@ -76,7 +85,10 @@ def test_mark_started(db_session, notification_template, group):
 def test_mark_started_without_commit(db_session, notification_template, group):
     repo = NotificationRepository(db_session)
 
-    notification = repo.create(notification_template.id, group.id)
+    notification = repo.create(
+        template_id=notification_template.id,
+        group_id=group.id,
+    )
 
     repo.mark_started(notification.id)
 
@@ -87,7 +99,10 @@ def test_mark_started_without_commit(db_session, notification_template, group):
 def test_mark_finished(db_session, notification_template, group):
     repo = NotificationRepository(db_session)
 
-    notification = repo.create(notification_template.id, group.id)
+    notification = repo.create(
+        template_id=notification_template.id,
+        group_id=group.id,
+    )
 
     repo.mark_finished(notification.id)
     db_session.commit()
@@ -100,7 +115,10 @@ def test_mark_finished(db_session, notification_template, group):
 def test_update_status_direct(db_session, notification_template, group):
     repo = NotificationRepository(db_session)
 
-    notification = repo.create(notification_template.id, group.id)
+    notification = repo.create(
+        template_id=notification_template.id,
+        group_id=group.id,
+    )
 
     repo.update_status(notification.id, NotificationStatus.SUCCESS)
     db_session.commit()

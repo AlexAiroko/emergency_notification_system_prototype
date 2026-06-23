@@ -4,24 +4,11 @@ from sqlalchemy.orm import selectinload
 from app.models.contact import Contact
 from app.models.group import Group
 from app.models.group_contact import GroupContact
-from app.repositories.base import BaseRepository
+from app.repositories.active import ActiveRepository
 
 
-class GroupRepository(BaseRepository):
-    def create(self, name: str) -> Group:
-        group = Group(name=name)
-        self.session.add(group)
-        self.flush()
-        return group
-    
-    def get(self, group_id: int) -> Group | None:
-        stmt = (
-            select(Group)
-            .where(Group.id == group_id)
-        )
-        res = self.session.execute(stmt)
-        group = res.scalar_one_or_none()
-        return group
+class GroupRepository(ActiveRepository):
+    model = Group
     
     def get_with_contacts(self, group_id: int) -> Group | None:
         stmt = (

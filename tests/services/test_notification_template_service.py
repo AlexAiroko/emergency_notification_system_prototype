@@ -124,8 +124,8 @@ def test_update_template(template_service, uow):
         body="body",
     )
 
-    uow.template_repo.update_content.assert_called_once_with(
-        template_id=1,
+    uow.template_repo.update.assert_called_once_with(
+        1,
         subject="subj",
         body="body",
     )
@@ -139,8 +139,8 @@ def test_update_template_none_subject(template_service, uow):
         body="body",
     )
 
-    uow.template_repo.update_content.assert_called_once_with(
-        template_id=1,
+    uow.template_repo.update.assert_called_once_with(
+        1,
         subject="",
         body="body",
     )
@@ -158,7 +158,7 @@ def test_update_template_empty_body(template_service, uow):
             body=" ",
         )
 
-    uow.template_repo.update_content.assert_not_called()
+    uow.template_repo.update.assert_not_called()
 
 
 def test_activate_template(template_service, uow):

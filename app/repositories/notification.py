@@ -6,24 +6,7 @@ from app.repositories.base import BaseRepository
 
 
 class NotificationRepository(BaseRepository):
-    def create(self, template_id: int, group_id: int) -> Notification:
-        notification = Notification(
-            template_id=template_id,
-            group_id=group_id,
-        )
-        
-        self.session.add(notification)
-        self.flush()
-        return notification
-    
-    def get(self, notification_id: int) -> Notification | None:
-        stmt = (
-            select(Notification)
-            .where(Notification.id == notification_id)
-        )
-        res = self.session.execute(stmt)
-        notification = res.scalar_one_or_none()
-        return notification
+    model = Notification
     
     def get_with_relations(self, notification_id: int) -> Notification | None:
         stmt = (

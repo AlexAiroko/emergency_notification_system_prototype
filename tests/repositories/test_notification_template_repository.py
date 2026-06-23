@@ -122,10 +122,10 @@ def test_get_many_empty(db_session):
     assert templates == []
 
 
-def test_update_content(db_session, notification_template):
+def test_update(db_session, notification_template):
     repo = NotificationTemplateRepository(db_session)
 
-    repo.update_content(
+    repo.update(
         notification_template.id,
         subject="Updated subject",
         body="Updated body",

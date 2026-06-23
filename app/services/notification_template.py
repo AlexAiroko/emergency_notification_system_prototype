@@ -97,8 +97,8 @@ class NotificationTemplateService:
         self._validate_body(body)
 
         # The repository expects a string, so we replace None with an empty string.
-        uow.template_repo.update_content(
-            template_id=template_id,
+        uow.template_repo.update(
+            template_id,
             subject=subject or "",
             body=body,
         )

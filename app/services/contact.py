@@ -56,6 +56,6 @@ class ContactService:
             raise ContactNotFoundError(contact_id)
         
         uow.contact_repo.update(
-            contact_id=contact_id,
+            contact_id,
             name=name,
         )

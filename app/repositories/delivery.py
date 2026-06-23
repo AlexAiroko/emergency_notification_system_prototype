@@ -5,37 +5,10 @@ from app.repositories.base import BaseRepository
 
 
 class DeliveryRepository(BaseRepository):
-    def create(
-        self,
-        notification_id: int,
-        contact_id: int,
-        contact_method_id: int,
-        channel: str,
-        address: str,
-    ) -> Delivery:
-        delivery = Delivery(
-            notification_id=notification_id,
-            contact_id=contact_id,
-            contact_method_id=contact_method_id,
-            channel=channel,
-            address=address,
-            status=DeliveryStatus.PENDING,
-        )
-        self.session.add(delivery)
-        self.flush()
-        return delivery
+    model = Delivery
     
     def create_bulk(self, deliveries: list[Delivery]) -> None:
         self.session.add_all(deliveries)
-    
-    def get(self, delivery_id: int) -> Delivery | None:
-        stmt = (
-            select(Delivery)
-            .where(Delivery.id == delivery_id)
-        )
-        res = self.session.execute(stmt)
-        delivery = res.scalar_one_or_none()
-        return delivery
     
     def get_by_notification(self, notification_id: int) -> list[Delivery]:
         stmt = (

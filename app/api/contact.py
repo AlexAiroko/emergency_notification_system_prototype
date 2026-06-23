@@ -86,7 +86,9 @@ def update_contact(
     data: ContactUpdate,
     uow: UnitOfWork = Depends(get_uow),
 ):
-    uow.contact_repo.update(
+    service = ContactService()
+    service.update_contact(
+        uow=uow,
         contact_id=contact_id,
         name=data.name,
     )

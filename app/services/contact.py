@@ -43,3 +43,19 @@ class ContactService:
             raise ContactNotFoundError(contact_id)
         
         return contact
+
+    def update_contact(
+        self,
+        uow: UnitOfWork,
+        contact_id: int,
+        name: str,
+    ) -> None:
+        contact = uow.contact_repo.get(contact_id)
+        
+        if contact is None:
+            raise ContactNotFoundError(contact_id)
+        
+        uow.contact_repo.update(
+            contact_id=contact_id,
+            name=name,
+        )

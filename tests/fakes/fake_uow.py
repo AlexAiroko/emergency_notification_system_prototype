@@ -8,6 +8,8 @@ class FakeUnitOfWork:
         self.delivery_repo = Mock()
         self.group_repo = Mock()
         self.contact_repo = Mock()
+        self.contact_method_repo = Mock()
+        
 
         self.commit = Mock()
         self.rollback = Mock()

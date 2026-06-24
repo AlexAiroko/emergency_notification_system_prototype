@@ -28,6 +28,7 @@ pytest_plugins = [
     "tests.fixtures.template_service",
     "tests.fixtures.contact_service",
     "tests.fixtures.contact_method_service",
+    "tests.fixtures.group_service",
     "tests.fixtures.uow",
 ]
 

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class ProviderError(Exception):
-    """Ошибка отправки через внешний провайдер."""
+    """Error sending through an external provider."""
     pass
 
 
@@ -15,18 +15,18 @@ class BaseProvider(ABC):
         subject: str | None = None,
     ) -> str | None:
         """
-        Отправляет сообщение.
+        Sends a message.
 
         Args:
-            to: Адрес получателя (email, телефон, chat_id и т.д.)
-            body: Текст сообщения.
-            subject: Тема письма (используется, например, для email).
+            to: Recipient's address (email, phone, chat_id, etc.)
+            body: Message text.
+            subject: Email subject (used, for example, for email).
 
         Returns:
-            Идентификатор сообщения у внешнего провайдера,
-            если он доступен.
+            The ID of the message from the external provider,
+            if it is available.
 
         Raises:
-            ProviderError: если отправка завершилась ошибкой.
+            ProviderError: if the sending failed.
         """
         raise NotImplementedError

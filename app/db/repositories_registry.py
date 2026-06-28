@@ -8,7 +8,7 @@ from app.repositories.notification_template import NotificationTemplateRepositor
 
 REPOSITORIES = {
     "notification_repo": NotificationRepository,
-    "deliverie_repo": DeliveryRepository,
+    "delivery_repo": DeliveryRepository,
     "group_repo": GroupRepository,
     "template_repo": NotificationTemplateRepository,
     "contact_repo": ContactRepository,

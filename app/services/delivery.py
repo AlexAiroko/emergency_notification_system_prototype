@@ -1,5 +1,7 @@
 from app.db.uow import UnitOfWork
-from app.models.delivery import DeliveryStatus
+from app.exceptions.delivery import DeliveryNotFoundError
+from app.exceptions.notification import NotificationNotFoundError
+from app.models.delivery import Delivery, DeliveryStatus
 from app.providers.base import ProviderError
 from app.providers.provider_registry import ProviderRegistry
 from app.services.notification_template import NotificationTemplateService
@@ -10,6 +12,14 @@ class DeliveryService:
         self.template_service = NotificationTemplateService()
         
         self.provider_registry = ProviderRegistry()
+
+    def get_delivery(self, uow: UnitOfWork, delivery_id: int) -> Delivery:
+        delivery = uow.delivery_repo.get(delivery_id)
+        
+        if delivery is None:
+            raise DeliveryNotFoundError(delivery_id)
+        
+        return delivery
 
     def send(self, uow: UnitOfWork, delivery_id: int) -> None:
         """
@@ -22,17 +32,16 @@ class DeliveryService:
         4. If successful, marks the Delivery as SENT.
         5. If an error occurs, marks the Delivery as FAILED.
         """
+        
         delivery = uow.delivery_repo.get(delivery_id)
         
         if delivery is None:
-            raise ValueError(f"Delivery {delivery_id} not found")
+            raise DeliveryNotFoundError(delivery_id)
 
         notification = uow.notification_repo.get_with_relations(delivery.notification_id)
         
         if notification is None:
-            raise ValueError(
-                f"Notification {delivery.notification_id} not found"
-            )
+            raise NotificationNotFoundError(delivery.notification_id)
         
         template = self.template_service.ensure_template_is_active(
             uow,

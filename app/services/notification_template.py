@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy.exc import IntegrityError
 
 from app.db.uow import UnitOfWork
@@ -8,6 +10,9 @@ from app.exceptions.notification_template import (
     TemplateNotFoundError,
 )
 from app.models.notification_template import NotificationTemplate
+
+
+logger = logging.getLogger(__name__)
 
 
 class NotificationTemplateService:
@@ -29,13 +34,27 @@ class NotificationTemplateService:
         self._validate_body(body)
 
         try:
-            return uow.template_repo.create(
+            template = uow.template_repo.create(
                 body=body,
                 name=name,
                 subject=subject,
                 is_active=is_active,
             )
+
+            logger.info(
+                "Template %s created (name=%s, active=%s)",
+                template.id,
+                template.name,
+                template.is_active,
+            )
+
+            return template
         except IntegrityError as exc:
+            logger.warning(
+                "Failed to create template: template with name '%s' already exists",
+                name,
+            )
+            
             raise TemplateAlreadyExistsError() from exc
 
     def get_template(self, uow: UnitOfWork, template_id: int) -> NotificationTemplate | None:
@@ -102,6 +121,11 @@ class NotificationTemplateService:
             subject=subject or "",
             body=body,
         )
+        
+        logger.info(
+            "Template %s updated",
+            template_id,
+        )
 
     def activate_template(self, uow: UnitOfWork, template_id: int) -> None:
         """
@@ -109,6 +133,11 @@ class NotificationTemplateService:
         """
         
         uow.template_repo.activate(template_id)
+        
+        logger.info(
+            "Template %s activated",
+            template_id,
+        )
 
     def deactivate_template(self, uow: UnitOfWork, template_id: int) -> None:
         """
@@ -116,6 +145,11 @@ class NotificationTemplateService:
         """
         
         uow.template_repo.deactivate(template_id)
+        
+        logger.info(
+            "Template %s deactivated",
+            template_id,
+        )
 
     def ensure_template_is_active(
         self,

@@ -23,3 +23,8 @@ app.add_exception_handler(
     AppError,
     error_handler,
 )
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}

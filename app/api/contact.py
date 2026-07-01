@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, File, UploadFile, status
 
 from app.db.deps import get_uow
 from app.db.uow import UnitOfWork
 from app.schemas.contact import ContactCreate, ContactResponse, ContactUpdate
+from app.schemas.contact_import import ContactImportResponse, ImportErrorItem
 from app.services.contact import ContactService
+from app.services.contact_import.service import ContactImportService
 
 
 router = APIRouter(
@@ -114,3 +116,30 @@ def deactivate_contact(
     uow: UnitOfWork = Depends(get_uow),
 ):
     uow.contact_repo.deactivate(contact_id)
+
+
+@router.post(
+    "/import",
+    response_model=ContactImportResponse,
+)
+def import_contacts(
+    file: UploadFile = File(),
+    uow: UnitOfWork = Depends(get_uow),
+):
+    service = ContactImportService()
+    
+    result = service.import_contacts(
+        uow=uow,
+        file=file,
+    )
+    
+    return ContactImportResponse(
+        message="Contacts import completed",
+        total=result.total,
+        imported=result.imported,
+        skipped=result.skipped,
+        errors=[
+            ImportErrorItem(**err)
+            for err in result.errors
+        ],
+    )

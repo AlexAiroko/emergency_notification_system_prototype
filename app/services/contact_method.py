@@ -4,6 +4,7 @@ from app.db.uow import UnitOfWork
 from app.exceptions.contact import ContactNotFoundError
 from app.exceptions.contact_method import ContactMethodNotFoundError
 from app.models.contact_method import ChannelType, ContactMethod
+from app.validators.contact_methods.registry import ContactMethodValidatorRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +25,11 @@ class ContactMethodService:
                 contact_id,
             )
             raise ContactNotFoundError(contact_id)
+
+        address = ContactMethodValidatorRegistry.validate(
+            channel=channel,
+            value=address,
+        )
 
         method = uow.contact_method_repo.create(
             contact_id=contact_id,
@@ -90,6 +96,11 @@ class ContactMethodService:
                 contact_id,
             )
             raise ContactMethodNotFoundError(method_id)
+
+        address = ContactMethodValidatorRegistry.validate(
+            channel=channel,
+            value=address,
+        )
 
         uow.contact_method_repo.update(
             method_id,

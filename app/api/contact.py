@@ -124,14 +124,10 @@ def deactivate_contact(
 )
 def import_contacts(
     file: UploadFile = File(),
-    uow: UnitOfWork = Depends(get_uow),
 ):
     service = ContactImportService()
     
-    result = service.import_contacts(
-        uow=uow,
-        file=file,
-    )
+    result = service.import_contacts(file=file)
     
     return ContactImportResponse(
         message="Contacts import completed",
